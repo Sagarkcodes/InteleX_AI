@@ -1,14 +1,9 @@
-# Virtual Environment
-# Ignores the entire 'venv' folder
 venv/
-
-# Python cache files
-# Ignores any folder named __pycache__ and any file ending in .pyc
 __pycache__/
 *.pyc
-
-# VS Code specific settings folder
-.vscode/
-
-# Temporary folder for resume uploads
-temp_uploads/
+.DS_Store
+*.wav
+*.webm
+*.mp3
+*.flac
+/static/uploads/

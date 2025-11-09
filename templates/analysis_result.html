@@ -1,89 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InteleX - Analysis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        /* Specific styles for the analysis container */
-        .container.analysis-container {
-            max-width: 600px;
-            text-align: center;
-        }
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Big Five Personality Analysis</h2>
+    {% if traits %}
+    <canvas id="traitChart" width="400" height="400"></canvas>
 
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 5px;
-        }
-        
-        .status-message {
-            font-size: 1.1em;
-            color: var(--text-color-light);
-            margin-bottom: 40px;
-        }
-
-        /* The agent container itself */
-        .intelex-agent-wrapper {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 40px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .intelex-agent-image {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            position: relative;
-            z-index: 2;
-            border-radius: 50%; /* This forces the square image into a circle! */
-        }
-        
-        .intelex-agent-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            opacity: 0.2;
-            filter: blur(20px);
-            z-index: 1;
-            animation: intelex-pulse 2s infinite ease-out;
-        }
-        
-        @keyframes intelex-pulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.2;
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('traitChart');
+      const chart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: {{ traits.keys() | list | safe }},
+          datasets: [{
+            label: 'Trait Scores',
+            data: {{ traits.values() | list | safe }},
+            borderColor: '#00E4C8',
+            backgroundColor: 'rgba(0, 228, 200, 0.2)',
+            pointBackgroundColor: '#00FFBF',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { color: '#1E1F22' },
+              grid: { color: '#333' },
+              pointLabels: { color: '#D8D8DA' },
+              suggestedMin: 30,
+              suggestedMax: 100
             }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0.5;
-            }
+          },
+          plugins: { legend: { labels: { color: '#D8D8DA' } } }
         }
-    </style>
-</head>
-<body>
-    <div class="container analysis-container">
-        <h1>Analysis Complete</h1>
-        <p class="status-message">Your resume has been successfully analyzed by InteleX. The AI is ready to begin your live personality assessment.</p>
-        
-        <div class="intelex-agent-wrapper">
-            <img src="{{ url_for('static', filename='img/intelex_agent_static.png') }}" alt="InteleX AI Agent" class="intelex-agent-image">
-            <div class="intelex-agent-glow"></div>
-        </div>
-
-        <div class="next-button-container">
-            <a href="{{ url_for('ready_for_interview') }}" class="next-button">Proceed to Personality Assessment</a>
-        </div>
-    </div>
-</body>
-</html>
+      });
+    </script>
+    {% else %}
+    <p>No analysis data found. Please complete the interview first.</p>
+    {% endif %}
+</div>
+{% endblock %}

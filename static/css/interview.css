@@ -1,0 +1,108 @@
+/* ===========================================================
+   INTELEX+ — INTERVIEW PAGE STYLING
+   =========================================================== */
+
+.page-title {
+    text-align: center;
+    color: #00E4C8;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Centered AI Agent */
+.ai-center-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.ai-avatar {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: floatAvatar 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(0, 255, 200, 0.5));
+}
+
+.ai-agent-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #00E4C8;
+    box-shadow: 0 0 25px rgba(0, 228, 200, 0.7);
+    z-index: 2;
+    animation: pulseGlow 3s ease-in-out infinite;
+    transition: all 0.3s ease;
+}
+
+.glow-ring {
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 255, 200, 0.3);
+    box-shadow: 0 0 40px rgba(0, 255, 200, 0.15);
+    animation: rotateRing 10s linear infinite;
+    z-index: 1;
+}
+
+.ai-agent-text {
+    color: #00E4C8;
+    font-size: 18px;
+    margin-top: 8px;
+    line-height: 1.5;
+    animation: fadeText 1.2s ease forwards;
+    max-width: 600px;
+}
+
+/* Reading Box */
+.reading-box {
+    margin: 30px auto;
+    width: 70%;
+    background-color: #111214;
+    border: 1px solid #1E1F22;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 0 18px rgba(0, 255, 200, 0.08);
+    color: #D8D8DA;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Candidate Section */
+.candidate-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Animations */
+@keyframes floatAvatar {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 25px rgba(0, 228, 200, 0.6); }
+    50% { box-shadow: 0 0 45px rgba(0, 255, 200, 1); transform: scale(1.05); }
+}
+
+@keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeText {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.speaking {
+    box-shadow: 0 0 60px rgba(0, 255, 180, 0.9) !important;
+    transform: scale(1.05);
+}

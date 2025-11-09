@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Upload Resume</h2>
+<p>Please upload your resume (PDF or DOCX). We process it in the background.</p>
+
+<form method="POST" enctype="multipart/form-data">
+  <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
+  <button class="btn" type="submit">Upload & Continue</button>
+</form>
+
+{% if error %}
+  <p style="color: #ff8080; margin-top:10px;">{{ error }}</p>
+{% endif %}
+{% endblock %}

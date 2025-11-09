@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Register Candidate</h2>
+  <form method="post">
+    <label>Name</label>
+    <input type="text" name="name" required>
+
+    <label>Email</label>
+    <input type="email" name="email" required>
+
+    <label>Target Role (optional)</label>
+    <input type="text" name="role" placeholder="e.g., Data Analyst">
+
+    <button class="btn" type="submit">Continue</button>
+  </form>
+</div>
+{% endblock %}
