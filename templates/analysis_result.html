@@ -39,4 +39,16 @@
     <p>No analysis data found. Please complete the interview first.</p>
     {% endif %}
 </div>
+
+<!-- Add this where appropriate inside analysis_result.html -->
+<div style="text-align:center; margin-top:26px;">
+  <a href="{{ url_for('video_interview') }}" class="btn-record" style="padding:12px 28px; text-decoration:none;">
+    Proceed to Video Interview ▶
+  </a>
+  <p style="color:#bdeee2; margin-top:12px; font-size:0.95rem;">
+    Next: a short video Q&A. Please ensure your camera and microphone are allowed. Follow the on-screen instructions.
+  </p>
+</div>
+
+
 {% endblock %}

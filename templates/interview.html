@@ -1,40 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
+<section class="voice-interview-fullscreen">
+  <div class="vi-layout">
+    
+    <!-- ========== LEFT PANEL (AI Agent) ========== -->
+    <div class="vi-left">
+      <div class="agent-avatar-wrap">
+        <div class="glow-ring"></div>
+        <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="AI Agent" class="agent-avatar spinning" id="ai-avatar">
+      </div>
 
-<h2>Voice-Based Personality Assessment 🎙️</h2>
+      <h2 class="vi-title">Voice-Based Personality Assessment 🎙️</h2>
+      <p class="agent-text" id="agent-dialogue">
+        Welcome <strong>{{ name }}</strong> — I’m InteleX.  
+        Please listen carefully to the paragraph and then read it aloud clearly.  
+        We’ll record your response for analysis.
+      </p>
 
-<div class="ai-interview-box">
-  <div class="ai-agent-container">
-    <div class="ai-avatar">
-      <!-- InteleX Agent Logo -->
-      <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" 
-           class="ai-agent-photo" 
-           id="agentPhoto" 
-           alt="AI Agent">
-      <div class="glow-ring"></div>
+      <div class="agent-controls">
+        <button class="btn" id="start-audio-btn">Begin Test</button>
+        <button class="btn" id="stop-record-btn" disabled>Stop</button>
+      </div>
+
+      <div class="instruction-box">
+        <h4>Recording Instructions</h4>
+        <ul>
+          <li>Ensure your microphone is allowed.</li>
+          <li>Read the displayed text clearly and naturally.</li>
+          <li>You have 1 minute to finish reading.</li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Agent's Speaking Text -->
-    <div class="ai-agent-text" id="aiText">
-      Loading interviewer...
+    <!-- ========== RIGHT PANEL (Reading + Recording Status) ========== -->
+    <div class="vi-right">
+      <div class="reading-box">
+        <h3>Reading Passage 📘</h3>
+        <p id="reading-text">
+          "I enjoy exploring new ideas, meeting people, and facing challenges that help me grow.  
+          Each day brings new opportunities to learn and improve myself."
+        </p>
+      </div>
+
+      <div class="recording-status">
+        <p id="rec-status">Wait for the AI to finish speaking...</p>
+      </div>
+
+      <div class="timer-bar">
+        <div class="progress-bar">
+          <div id="record-progress" class="progress-fill"></div>
+        </div>
+        <p class="timer-text">Time left: <span id="record-timer">00:00</span></p>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Paragraph for Candidate to Read -->
-<div class="reading-box">
-  <p id="readingText">
-    “I enjoy exploring new ideas, meeting people, and facing challenges that help me grow.”
-  </p>
-</div>
-
-<!-- Recording Section -->
-<div class="candidate-section">
-  <p id="statusText">Wait for the AI to finish speaking...</p>
-  <button class="btn" id="recordBtn" disabled>Start Recording</button>
-</div>
-
-<!-- Only link JS file (no inline scripts) -->
 <script src="{{ url_for('static', filename='js/interview.js') }}"></script>
-
 {% endblock %}

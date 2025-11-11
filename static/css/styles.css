@@ -1,60 +1,108 @@
-/* ===============================
-   GLOBAL DARK THEME (Original InteleX+)
-   =============================== */
-
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #0b0c0e;
-  color: #D8D8DA;
+/* ============================================================
+   GLOBAL FULLSCREEN PROFESSIONAL THEME — InteleX+
+   ============================================================ */
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top left, #071012 0%, #010303 100%);
+  color: #E8F7F5;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
-/* ===============================
-   NAVBAR
-   =============================== */
-.nav {
-  background: linear-gradient(90deg, #030712, #0F172A);
+/* ============================================================
+   FIXED NAVBAR (Glassmorphic Professional Style)
+   ============================================================ */
+/* ============================================================
+   FIXED NAVBAR (Perfectly Aligned & Professional)
+   ============================================================ */
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: rgba(3, 7, 18, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 255, 200, 0.08);
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 14px 28px;
-  box-shadow: 0 2px 10px rgba(0, 255, 200, 0.05);
+  justify-content: space-between;
+  padding: 0 60px;
+  z-index: 1000;
 }
 
-.nav a {
+.logo-text {
+  font-size: 22px;
+  font-weight: 600;
   color: #00E4C8;
+  letter-spacing: 0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a {
+  color: #A8FFF0;
   text-decoration: none;
   font-weight: 600;
-  font-size: 16px;
-  transition: 0.3s ease;
+  font-size: 15px;
+  transition: all 0.3s ease;
 }
 
-.nav a:hover {
-  color: #00FFBF;
-  text-shadow: 0 0 12px #00FFBF;
+.nav-links a:hover {
+  color: #00FFD2;
+  text-shadow: 0 0 8px #00FFD2;
 }
 
-/* ===============================
+/* ============================================================
+   UNIVERSAL HEADINGS AND TEXT
+   ============================================================ */
+h1, h2, h3 {
+  font-weight: 700;
+  color: #00E4C8;
+  text-shadow: 0 0 20px rgba(0, 255, 200, 0.15);
+}
+
+p, li, label {
+  color: #C8E6E2;
+  line-height: 1.6;
+}
+
+a {
+  color: #00E4C8;
+  text-decoration: none;
+}
+a:hover {
+  color: #00FFD2;
+}
+
+/* ============================================================
    HOME PAGE
-   =============================== */
+   ============================================================ */
 .home-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 80vh;
-  padding: 40px 16px;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
 }
 
 .logo-container {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .logo {
-  width: 180px;
+  width: 190px;
   filter: drop-shadow(0 0 25px #00E4C8);
   animation: pulseLogo 3s ease-in-out infinite;
 }
@@ -66,8 +114,8 @@ body {
 
 h1 {
   color: #00E4C8;
-  font-size: 32px;
-  margin: 10px 0;
+  font-size: 38px;
+  margin: 12px 0;
 }
 
 .tagline {
@@ -76,58 +124,63 @@ h1 {
 }
 
 .info-box {
-  max-width: 800px;
-  background: #111214;
+  max-width: 900px;
+  background: rgba(12, 15, 15, 0.55);
   border-radius: 16px;
-  padding: 24px;
-  margin-top: 24px;
-  line-height: 1.6;
-  box-shadow: 0 0 25px rgba(0, 255, 200, 0.05);
+  padding: 26px 40px;
+  margin-top: 30px;
+  line-height: 1.7;
+  box-shadow: 0 0 25px rgba(0, 255, 200, 0.08);
 }
 
-/* ===============================
-   BUTTONS
-   =============================== */
+/* ============================================================
+   BUTTONS (Shared across pages)
+   ============================================================ */
 .btn {
   background: #00E4C8;
   color: #000;
   font-weight: 600;
   border: none;
   border-radius: 10px;
-  padding: 12px 26px;
-  margin-top: 20px;
+  padding: 12px 30px;
+  margin-top: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn:hover {
-  background: #00FFBF;
-  box-shadow: 0 0 18px #00FFBF;
+  background: #00FFD2;
+  box-shadow: 0 0 20px #00FFD2;
   transform: translateY(-2px);
 }
 
-/* ===============================
-   REGISTER / FORM PAGE
-   =============================== */
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   REGISTER & RESUME UPLOAD FORMS
+   ============================================================ */
 .container {
-  background-color: #111214;
+  background: rgba(10, 12, 12, 0.65);
   border-radius: 16px;
   box-shadow: 0 0 25px rgba(0, 255, 200, 0.05);
-  max-width: 600px;
-  margin: 60px auto;
-  padding: 30px;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 40px;
   text-align: center;
 }
 
 .container h2 {
   color: #00E4C8;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 label {
@@ -139,7 +192,7 @@ label {
 input[type="text"],
 input[type="email"],
 input[type="file"] {
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 1px solid #1E1F22;
   border-radius: 8px;
   background-color: #0f1112;
@@ -154,74 +207,267 @@ input:focus {
   outline: none;
 }
 
-/* ===============================
-   INTERVIEW PAGE (Left-aligned AI)
-   =============================== */
-.ai-interview-box {
-  background-color: #111214;
-  border-radius: 14px;
-  padding: 22px;
-  margin: 30px auto;
-  max-width: 800px;
-  box-shadow: 0 0 18px rgba(0, 255, 200, 0.06);
+/* ============================================================
+   AUDIO INTERVIEW (Agent Animation)
+   ============================================================ */
+.ai-avatar.spinning img.ai-agent-photo {
+  animation: spinSlow 8s linear infinite;
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.ai-agent-container {
+/* ============================================================
+   FULLSCREEN VIDEO INTERVIEW PAGE
+   ============================================================ */
+.video-interview-fullscreen {
+  width: 100%;
+  height: calc(100vh - 64px);
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 20px;
+  color: #E8FEF8;
+  overflow: hidden;
+  padding: 20px 50px;
 }
 
-.ai-agent-photo {
-  width: 95px;
-  height: 95px;
-  border-radius: 50%;
-  border: 3px solid #00E4C8;
-  box-shadow: 0 0 20px rgba(0, 255, 200, 0.6);
-  animation: pulseGlow 3s ease-in-out infinite;
+.vi-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  height: 85vh;
+  max-width: 1700px;
+  gap: 60px;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 18px #00E4C8; }
-  50% { box-shadow: 0 0 35px #00FFBF; transform: scale(1.05); }
-}
-
-.ai-agent-text {
-  font-size: 18px;
-  color: #00E4C8;
+/* LEFT PANEL (AI Agent) */
+.vi-left {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+.agent-avatar-wrap {
+  position: relative;
+  width: 130px;
+  height: 130px;
+}
+
+.agent-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  animation: idlePulse 3s ease-in-out infinite;
+}
+
+.agent-avatar.speaking {
+  animation: spinAgent 2s linear infinite;
+}
+
+.glow-ring {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(0, 255, 200, 0.4);
+}
+
+@keyframes idlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes spinAgent {
+  from { transform: rotate(0deg) scale(1.05); }
+  to { transform: rotate(360deg) scale(1.05); }
+}
+
+.vi-title {
+  color: #00FFD0;
+  font-size: 30px;
+  text-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
+}
+
+.agent-text {
+  color: #BFEFE6;
+  font-size: 16px;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.agent-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* INSTRUCTION BOX */
+.instruction-box {
+  background: rgba(8, 12, 12, 0.65);
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 0 18px rgba(0, 255, 200, 0.05);
+  max-width: 420px;
+}
+.instruction-box h4 {
+  color: #AEEFE0;
+  margin-bottom: 10px;
+}
+.instruction-box ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #D7F8F1;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* TIMER BOX */
+.timers-box {
+  background: rgba(10, 12, 12, 0.55);
+  padding: 14px 22px;
+  border-radius: 10px;
+  max-width: 420px;
+}
+.timer-line {
+  display: flex;
+  justify-content: space-between;
+  color: #CDEEEE;
+  margin-bottom: 6px;
+}
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00FFD0, #00E0B0);
+  transition: width 0.2s linear;
+}
+
+/* RIGHT PANEL (Video) */
+.vi-right {
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-box {
+  width: 100%;
+  max-width: 650px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+}
+
+.video-box video {
+  width: 100%;
+  height: 440px;
+  object-fit: cover;
+  background: #000;
+  border-radius: 12px;
+}
+
+.vid-status {
+  color: #BFEFE6;
+  font-size: 15px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.question-box {
+  background: rgba(6, 8, 8, 0.55);
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.05);
+  text-align: center;
+  margin-top: 18px;
+}
+.question-box h4 {
+  color: #9FF8E7;
+  margin-bottom: 8px;
+}
+.question-box p {
+  color: #E4FFF7;
+  font-size: 15px;
+  min-height: 50px;
+}
+
+/* ============================================================
+   SCROLL PREVENTION (Video / Voice Pages)
+   ============================================================ */
+body, html {
+  overflow: hidden;
+  height: 100%;
+}
+/* ============================================================
+   VOICE INTERVIEW PAGE (Fullscreen Professional Layout)
+   ============================================================ */
+/* ============================================================
+   VOICE INTERVIEW — FIXED TO ONE SCREEN, FULL DESKTOP FIT
+   ============================================================ */
+.voice-interview-fullscreen {
+  width: 100%;
+  height: calc(100vh - 64px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #E8FEF8;
+  background: radial-gradient(circle at top left, #081012 0%, #010303 100%);
+  padding: 0 5%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.vi-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  height: 85vh;
+  gap: 4%;
+}
+
+/* Make sure text + boxes fit nicely without scrolling */
+.vi-left, .vi-right {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .reading-box {
-  background-color: #111214;
-  border-radius: 14px;
-  padding: 20px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  background: rgba(8, 12, 12, 0.55);
+  padding: 18px 26px;
+  border-radius: 12px;
   text-align: center;
-  max-width: 700px;
-  margin: 30px auto;
-  box-shadow: 0 0 12px rgba(0, 255, 200, 0.08);
+  max-width: 550px;
+  align-self: center;
+  box-shadow: 0 0 18px rgba(0, 255, 200, 0.05);
 }
 
-.candidate-section {
-  text-align: center;
-  margin-bottom: 50px;
-}
-
-/* ===============================
-   ANIMATIONS
-   =============================== */
-.animate-fade-in {
-  opacity: 0;
-  animation: fadeIn 1.2s ease forwards;
-}
-
-.animate-slide-up {
-  opacity: 0;
-  animation: slideUp 1.2s ease forwards;
-}
-
-@keyframes fadeIn { to { opacity: 1; } }
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.agent-text {
+  max-width: 400px;
+  font-size: 15px;
+  line-height: 1.6;
 }

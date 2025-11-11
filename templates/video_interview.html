@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="video-interview-fullscreen">
+  <div class="vi-layout">
+    <!-- LEFT PANEL (Agent) -->
+    <div class="vi-left">
+      <div class="agent-avatar-wrap">
+        <img id="agentPhoto" src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="AI Agent" class="agent-avatar">
+        <div class="glow-ring"></div>
+      </div>
+
+      <div class="agent-text">
+        <h2 class="vi-title">Video Interview — Live Session 🎥</h2>
+        <p id="aiText">Welcome — I am InteleX. Please open your camera to begin the interview.</p>
+        <p class="agent-hint">Tip: Allow camera & mic access when the browser asks.</p>
+      </div>
+
+      <div class="agent-controls">
+        <button id="openCameraBtn" class="btn">Open Camera</button>
+        <button id="beginBtn" class="btn" disabled>Begin</button>
+        <button id="submitBtn" class="btn" disabled>Submit</button>
+      </div>
+
+      <div class="instruction-box">
+        <h4>Interview Guidelines</h4>
+        <ul>
+          <li>Keep your face centered and maintain eye contact.</li>
+          <li>Do not use any other electronic devices during the session.</li>
+          <li>You’ll have 5 seconds to start and 5 minutes to answer each question.</li>
+        </ul>
+      </div>
+
+      <div class="timers-box">
+        <div class="timer-line">
+          <span>Total Time Left:</span> <strong id="totalTimerDisplay">05:00</strong>
+        </div>
+        <div class="timer-line">
+          <span>Pause (silence):</span> <strong id="pauseTimerDisplay">0s</strong>
+        </div>
+        <div class="progress-bar">
+          <div id="videoTimerFill" class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL (Video) -->
+    <div class="vi-right">
+      <div class="video-box">
+        <video id="preview" autoplay playsinline muted></video>
+      </div>
+      <p id="vidStatus" class="vid-status">Camera is closed.</p>
+      <div class="question-box">
+        <h4>AI Question</h4>
+        <p id="viQuestion">Press Begin to start your interview.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/video_interview.js') }}"></script>
+
+{% endblock %}

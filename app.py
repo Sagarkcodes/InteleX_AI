@@ -71,6 +71,27 @@ def resume():
 @app.route("/interview")
 def interview():
     return render_template("interview.html")
+
+# ---------------- LLM Question Generator ----------------
+# add/replace this route in app.py (near other routes)
+from ai_module.llm_engine import generate_interview_question
+
+@app.route('/next-question', methods=['POST'])
+def next_question():
+    data = request.get_json() or {}
+    name = data.get('name', 'Candidate')
+    skills = data.get('skills', [])
+    prev = data.get('previous', [])
+    # accept optional flag to request short question (default True)
+    short_flag = data.get('short', True)
+
+    question = generate_interview_question(name, skills, prev, short=short_flag)
+    # If LLM returned error marker, reflect it
+    if question.startswith("[LLM error"):
+        return jsonify({'success': False, 'error': question}), 500
+
+    return jsonify({'success': True, 'question': question})
+
 # ---------------- AI Voice Route ----------------
 from ai_module.tts import say_text_to_file
 
@@ -160,6 +181,41 @@ def analysis_result():
                     except ValueError:
                         traits[k] = v
     return render_template("analysis_result.html", traits=traits)
+
+# ---------------- VIDEO INTERVIEW ----------------
+@app.route("/video-interview")
+def video_interview():
+    """
+    Renders the video interview page.
+    """
+    return render_template("video_interview.html")
+
+
+@app.route("/upload-video", methods=["POST"])
+def upload_video():
+    """
+    Handles video recording uploads from the video interview page.
+    Saves the file and returns its path.
+    """
+    print("🟡 /upload-video endpoint hit!")
+    print("🔍 Incoming form keys:", request.files.keys())
+
+    if "video" not in request.files:
+        return jsonify({"success": False, "error": "No video file received."}), 400
+
+    file = request.files["video"]
+    if file.filename == "":
+        filename = f"video_{datetime.now().strftime('%Y%m%d_%H%M%S')}.webm"
+    else:
+        filename = timestamped_filename(file.filename)
+
+    save_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(save_path)
+    print(f"💾 Saved video to {save_path}")
+
+    rel_path = url_for("static", filename=f"uploads/{filename}")
+    return jsonify({"success": True, "path": rel_path})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
