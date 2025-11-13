@@ -1,54 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Big Five Personality Analysis</h2>
-    {% if traits %}
-    <canvas id="traitChart" width="400" height="400"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      const ctx = document.getElementById('traitChart');
-      const chart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: {{ traits.keys() | list | safe }},
-          datasets: [{
-            label: 'Trait Scores',
-            data: {{ traits.values() | list | safe }},
-            borderColor: '#00E4C8',
-            backgroundColor: 'rgba(0, 228, 200, 0.2)',
-            pointBackgroundColor: '#00FFBF',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          scales: {
-            r: {
-              angleLines: { color: '#1E1F22' },
-              grid: { color: '#333' },
-              pointLabels: { color: '#D8D8DA' },
-              suggestedMin: 30,
-              suggestedMax: 100
-            }
-          },
-          plugins: { legend: { labels: { color: '#D8D8DA' } } }
-        }
-      });
-    </script>
-    {% else %}
-    <p>No analysis data found. Please complete the interview first.</p>
-    {% endif %}
-</div>
+<section class="analysis-wrapper">
 
-<!-- Add this where appropriate inside analysis_result.html -->
-<div style="text-align:center; margin-top:26px;">
-  <a href="{{ url_for('video_interview') }}" class="btn-record" style="padding:12px 28px; text-decoration:none;">
-    Proceed to Video Interview ▶
-  </a>
-  <p style="color:#bdeee2; margin-top:12px; font-size:0.95rem;">
-    Next: a short video Q&A. Please ensure your camera and microphone are allowed. Follow the on-screen instructions.
-  </p>
-</div>
+    <!-- HEADER -->
+    <div class="analysis-header">
+        <h1 class="analysis-title">🧠 Personality Analysis Report</h1>
+        <p class="analysis-subtitle">
+            Your voice sample has been analyzed using the Big Five Personality Framework.
+        </p>
+    </div>
 
+    <!-- TRAIT CARDS -->
+    <div class="trait-container">
+        {% for trait, value in traits.items() %}
+        <div class="trait-card">
+            <h3 class="trait-name">{{ trait }}</h3>
+
+            <div class="trait-bar">
+                <div class="trait-bar-fill" style="width: {{ value }}%;"></div>
+            </div>
+
+            <span class="trait-score">{{ value }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="analysis-summary">
+        <h2>📌 Summary</h2>
+        <p>
+            These personality traits reflect your communication style, clarity, stress response, and 
+            overall expression patterns captured during your voice recording.
+        </p>
+        <p>
+            This summary is meant to help you understand your strengths and improvement areas for 
+            upcoming interviews, especially in professional or high-pressure scenarios.
+        </p>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="analysis-actions">
+        <a href="/video-interview" class="btn-primary-glow">🎥 Continue to Video Interview</a>
+        <a href="/" class="btn-secondary-outline">🏠 Back to Home</a>
+    </div>
+
+</section>
 
 {% endblock %}

@@ -1,147 +1,124 @@
-// ==================== VOICE PERSONALITY ASSESSMENT ====================
+window.addEventListener("DOMContentLoaded", async () => {
+  const instruction = document.getElementById("ai-instruction");
+  const readingText = document.getElementById("reading-text");
+  const paragraphBox = document.getElementById("paragraph-box");
+  const controls = document.getElementById("controls");
+  const startBtn = document.getElementById("start-recording");
+  const stopBtn = document.getElementById("stop-recording");
+  const timerDisplay = document.getElementById("record-timer");
+  const statusText = document.getElementById("status-text");
+  const agentAvatar = document.querySelector(".agent-avatar");
 
-// ----------- ELEMENT REFERENCES -----------
-const aiAvatar = document.getElementById("ai-avatar");
-const agentDialogue = document.getElementById("agent-dialogue");
-const startBtn = document.getElementById("start-audio-btn");
-const stopBtn = document.getElementById("stop-record-btn");
-const recStatus = document.getElementById("rec-status");
-const timerBar = document.getElementById("record-progress");
-const timerText = document.getElementById("record-timer");
+  let recorder, audioChunks = [], timer, seconds = 0;
 
-// ----------- AUDIO RECORDING STATE -----------
-let mediaRecorder;
-let audioChunks = [];
-let isRecording = false;
-let recordTimer;
-let progressInterval;
-const RECORD_TIME_LIMIT = 60; // 1 minute
-
-// ----------- SPEECH SYNTHESIS -----------
-function speak(text, callback) {
-  agentDialogue.textContent = text;
-  const synth = window.speechSynthesis;
-  const utter = new SpeechSynthesisUtterance(text);
-
-  utter.pitch = 1.05;
-  utter.rate = 1.0;
-  utter.volume = 1.0;
-
-  const voices = synth.getVoices();
-  if (voices && voices.length > 0) {
-    utter.voice = voices.find(v => v.lang && v.lang.includes("en")) || voices[0];
+  // ✅ Animate avatar glow during speech
+  function setSpeakingState(isSpeaking) {
+    if (!agentAvatar) return;
+    if (isSpeaking) {
+      agentAvatar.classList.add("speaking-glow");
+    } else {
+      agentAvatar.classList.remove("speaking-glow");
+    }
   }
 
-  aiAvatar.classList.add("speaking");
-  synth.speak(utter);
+  // ✅ Speak text using browser voice (same as video interview)
+  function speakOnce(text, onEnd) {
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.02;
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length)
+        utterance.voice = voices.find(v => v.lang && v.lang.includes("en")) || voices[0];
 
-  utter.onend = () => {
-    aiAvatar.classList.remove("speaking");
-    if (callback) callback();
-  };
-}
+      utterance.onstart = () => setSpeakingState(true);
+      utterance.onend = () => {
+        setSpeakingState(false);
+        if (onEnd) onEnd();
+      };
 
-// ----------- INTRO SEQUENCE -----------
-function playIntro() {
-  speak(
-    "Hello there! I’m InteleX, your AI interview assistant. Let’s begin with a short personality reading test.",
-    () => {
-      speak(
-        "When I finish speaking, read the displayed paragraph aloud clearly for one minute.",
-        () => {
-          recStatus.textContent = "You can begin when you're ready.";
-          startBtn.disabled = false;
-        }
-      );
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn("⚠️ Browser TTS error:", e);
+      if (onEnd) onEnd();
     }
-  );
-}
+  }
 
-// Trigger the intro once browser loads voices
-window.speechSynthesis.onvoiceschanged = () => playIntro();
+  // 🧠 Step 1 — Greeting (instant voice)
+  const greetingText =
+    "Hello Candidate. Please stay in a calm environment and read the displayed paragraph clearly. You will have one minute to complete your reading.";
+  instruction.textContent = greetingText;
+  speakOnce(greetingText);
 
-// ----------- RECORDING FUNCTIONS -----------
-async function startRecording() {
+  // 🧩 Step 2 — Load paragraph immediately (no delay)
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-    mediaRecorder.onstop = uploadAudio;
+    const res = await fetch("/next-question");
+    const data = await res.json();
+    const paragraph =
+      data.paragraph ||
+      "Artificial Intelligence is transforming the way we interact with technology and data. It enables machines to adapt, reason, and respond intelligently to the world around them.";
 
-    isRecording = true;
+    paragraphBox.classList.remove("hidden");
+    controls.classList.remove("hidden");
+    readingText.textContent = paragraph;
+  } catch (err) {
+    console.error("❌ Failed to fetch paragraph:", err);
+  }
+
+  // 🎙️ Step 3 — Recording controls
+  startBtn.addEventListener("click", async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    recorder.ondataavailable = (e) => audioChunks.push(e.data);
+    recorder.onstop = async () => {
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+      const formData = new FormData();
+      formData.append("audio_data", blob, "voice_sample.webm");
+
+      statusText.textContent = "⏳ Uploading your voice for analysis...";
+      const res = await fetch("/upload-audio", { method: "POST", body: formData });
+      const result = await res.json();
+
+      if (result.success) {
+        statusText.textContent = "✅ Voice submitted successfully!";
+        setTimeout(() => (window.location.href = result.redirect), 1000);
+      } else {
+        statusText.textContent = "❌ Upload failed. Please retry.";
+      }
+    };
+
+    recorder.start();
+    startTimer();
     startBtn.disabled = true;
     stopBtn.disabled = false;
-    recStatus.textContent = "Recording in progress... 🎤";
-    startTimer();
+    statusText.textContent = "🎙️ Recording started...";
+  });
 
-    mediaRecorder.start();
-  } catch (err) {
-    recStatus.textContent = "⚠️ Microphone access denied. Please allow microphone and retry.";
-    console.error("Mic access error:", err);
+  stopBtn.addEventListener("click", () => {
+    if (recorder && recorder.state === "recording") {
+      recorder.stop();
+      stopTimer();
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      statusText.textContent = "🛑 Recording stopped.";
+    }
+  });
+
+  // Timer functions
+  function startTimer() {
+    seconds = 0;
+    timer = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const s = String(seconds % 60).padStart(2, "0");
+      timerDisplay.textContent = `Recording Time: ${m}:${s}`;
+    }, 1000);
   }
-}
 
-function stopRecording() {
-  if (!isRecording) return;
-  isRecording = false;
-
-  recStatus.textContent = "Processing your response...";
-  stopBtn.disabled = true;
-
-  clearInterval(progressInterval);
-  clearInterval(recordTimer);
-  mediaRecorder.stop();
-}
-
-// ----------- TIMER HANDLING -----------
-function startTimer() {
-  let elapsed = 0;
-  timerBar.style.width = "0%";
-
-  progressInterval = setInterval(() => {
-    elapsed++;
-    const progressPercent = (elapsed / RECORD_TIME_LIMIT) * 100;
-    timerBar.style.width = progressPercent + "%";
-    const timeLeft = RECORD_TIME_LIMIT - elapsed;
-    timerText.textContent = formatTime(timeLeft);
-
-    if (elapsed >= RECORD_TIME_LIMIT) stopRecording();
-  }, 1000);
-}
-
-function formatTime(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-}
-
-// ----------- UPLOAD AUDIO TO BACKEND -----------
-function uploadAudio() {
-  const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-  audioChunks = [];
-
-  const formData = new FormData();
-  formData.append("audio", audioBlob);
-
-  fetch("/upload-audio", { method: "POST", body: formData })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        recStatus.textContent = "✅ Audio uploaded successfully!";
-        setTimeout(() => {
-          window.location.href = data.redirect;
-        }, 1000);
-      } else {
-        recStatus.textContent = "⚠️ Upload failed. Try again.";
-      }
-    })
-    .catch(err => {
-      console.error("Upload error:", err);
-      recStatus.textContent = "⚠️ Connection error.";
-    });
-}
-
-// ----------- EVENT LISTENERS -----------
-startBtn.addEventListener("click", startRecording);
-stopBtn.addEventListener("click", stopRecording);
+  function stopTimer() {
+    clearInterval(timer);
+  }
+});

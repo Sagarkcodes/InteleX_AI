@@ -1,60 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="voice-interview-fullscreen">
-  <div class="vi-layout">
-    
-    <!-- ========== LEFT PANEL (AI Agent) ========== -->
-    <div class="vi-left">
-      <div class="agent-avatar-wrap">
-        <div class="glow-ring"></div>
-        <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="AI Agent" class="agent-avatar spinning" id="ai-avatar">
-      </div>
 
-      <h2 class="vi-title">Voice-Based Personality Assessment 🎙️</h2>
-      <p class="agent-text" id="agent-dialogue">
-        Welcome <strong>{{ name }}</strong> — I’m InteleX.  
-        Please listen carefully to the paragraph and then read it aloud clearly.  
-        We’ll record your response for analysis.
-      </p>
+<div class="interview-container">
+  <div class="agent-side">
+    <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="AI Agent" class="agent-avatar pulse-glow" />
+    <h2 class="agent-title">InteleX AI<br><span>Personality Assistant</span></h2>
+  </div>
 
-      <div class="agent-controls">
-        <button class="btn" id="start-audio-btn">Begin Test</button>
-        <button class="btn" id="stop-record-btn" disabled>Stop</button>
-      </div>
-
-      <div class="instruction-box">
-        <h4>Recording Instructions</h4>
-        <ul>
-          <li>Ensure your microphone is allowed.</li>
-          <li>Read the displayed text clearly and naturally.</li>
-          <li>You have 1 minute to finish reading.</li>
-        </ul>
-      </div>
+  <div class="interaction-side">
+    <div class="instruction-box">
+      <p id="ai-instruction">Loading AI instructions...</p>
     </div>
 
-    <!-- ========== RIGHT PANEL (Reading + Recording Status) ========== -->
-    <div class="vi-right">
-      <div class="reading-box">
-        <h3>Reading Passage 📘</h3>
-        <p id="reading-text">
-          "I enjoy exploring new ideas, meeting people, and facing challenges that help me grow.  
-          Each day brings new opportunities to learn and improve myself."
-        </p>
-      </div>
+    <div class="paragraph-box hidden" id="paragraph-box">
+      <h3>📖 Please read this paragraph aloud:</h3>
+      <p id="reading-text">Loading paragraph...</p>
+    </div>
 
-      <div class="recording-status">
-        <p id="rec-status">Wait for the AI to finish speaking...</p>
-      </div>
-
-      <div class="timer-bar">
-        <div class="progress-bar">
-          <div id="record-progress" class="progress-fill"></div>
-        </div>
-        <p class="timer-text">Time left: <span id="record-timer">00:00</span></p>
-      </div>
+    <div class="controls hidden" id="controls">
+      <button id="start-recording" class="btn btn-primary">🎙️ Start Recording</button>
+      <button id="stop-recording" class="btn btn-danger" disabled>⏹️ Submit</button>
+      <p id="record-timer">Recording Time: 00:00</p>
+      <p id="status-text"></p>
     </div>
   </div>
-</section>
+</div>
 
 <script src="{{ url_for('static', filename='js/interview.js') }}"></script>
 {% endblock %}

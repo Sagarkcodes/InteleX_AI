@@ -1,14 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Upload Resume</h2>
-<p>Please upload your resume (PDF or DOCX). We process it in the background.</p>
 
-<form method="POST" enctype="multipart/form-data">
-  <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
-  <button class="btn" type="submit">Upload & Continue</button>
-</form>
+<section class="resume-section animate-fade-in">
+  <div class="resume-container">
+    <h2>Upload Your Resume</h2>
+    <p class="resume-info">
+      Upload your resume so our AI can tailor interview questions to your background and skills.
+    </p>
 
-{% if error %}
-  <p style="color: #ff8080; margin-top:10px;">{{ error }}</p>
-{% endif %}
+    <form action="{{ url_for('resume') }}" method="POST" enctype="multipart/form-data" class="resume-form">
+      <div class="upload-box">
+        <label for="resume" class="upload-label">
+          <span class="upload-icon">📄</span>
+          <p>Select your resume file (PDF or DOCX)</p>
+        </label>
+        <input type="file" id="resume" name="resume" accept=".pdf,.docx" required>
+      </div>
+
+      <button type="submit" class="btn-upload">Upload & Continue</button>
+    </form>
+  </div>
+</section>
+
 {% endblock %}

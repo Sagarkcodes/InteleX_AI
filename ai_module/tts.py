@@ -1,52 +1,67 @@
-# ai_module/tts.py
 import os
-import traceback
+import time
+from datetime import datetime
 
-# Where to save generated speech
-OUTPUT_DIR = os.path.join("static", "audio")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+# Try importing Coqui
+try:
+    from TTS.api import TTS
+    coqui_available = True
+except ImportError:
+    coqui_available = False
+    print("⚠️ Coqui TTS not installed. Run: pip install TTS")
 
-def say_text_to_file(text, filename="inteleX_speech.wav", voice_name=None):
-    """
-    Generate speech to WAV file. Returns full path to WAV file.
-    Tries Coqui TTS first (higher-quality). If TTS is not available or fails,
-    falls back to pyttsx3 local TTS.
-    """
-    out_path = os.path.join(OUTPUT_DIR, filename)
+UPLOAD_FOLDER = "static/uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-    # Try high-quality Coqui TTS
+# Preload Coqui model once (faster, consistent)
+tts_model = None
+if coqui_available:
     try:
-        from TTS.api import TTS
-        # Default: use the first available model if no voice_name specified
-        # Example model name that generally exists: "tts_models/en/vctk/vits"
-        model_name = voice_name if voice_name else "tts_models/en/vctk/vits"
-        tts = TTS(model_name)
-        # generate and save
-        tts.tts_to_file(text=text, file_path=out_path, speaker="p239")
-
-
-        return out_path
+        print("🔄 Loading Coqui model (vctk/vits, speaker p251)...")
+        tts_model = TTS("tts_models/en/vctk/vits")
+        print("✅ Coqui model loaded successfully.")
     except Exception as e:
-        print("Coqui TTS not available or failed:", str(e))
-        # print stack for debugging
-        traceback.print_exc()
+        print(f"⚠️ Could not load Coqui model: {e}")
+        tts_model = None
 
-    # Fallback: pyttsx3 (local)
+
+def say_text_to_file(text: str, filename="intelx_voice.wav"):
+    """
+    Generate natural human-like voice (p251) for all project pages.
+    """
+    base, _ = os.path.splitext(filename)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    final_name = f"{base}_{timestamp}.wav"
+    save_path = os.path.join(UPLOAD_FOLDER, final_name)
+
+    # Preferred: Coqui
+    if coqui_available and tts_model is not None:
+        try:
+            tts_model.tts_to_file(
+                text=text,
+                speaker="p251",
+                speed=0.9,  # calm HR pace
+                file_path=save_path
+            )
+            # Ensure file flush
+            time.sleep(0.4)
+            print(f"✅ Coqui voice generated (p251): {save_path}")
+            return save_path
+        except Exception as e:
+            print(f"⚠️ Coqui generation failed: {e}")
+
+    # Fallback: pyttsx3 if Coqui unavailable
     try:
         import pyttsx3
         engine = pyttsx3.init()
-        # set properties if you want (rate, volume, voice)
-        try:
-            engine.setProperty('rate', 160)  # speaking rate
-            engine.setProperty('volume', 1.0)  # 0..1
-        except Exception:
-            pass
-        # pyttsx3 can save directly on some platforms via .save_to_file
-        engine.save_to_file(text, out_path)
+        engine.setProperty("rate", 160)
+        engine.save_to_file(text, save_path)
         engine.runAndWait()
-        return out_path
+        print(f"⚠️ Used fallback pyttsx3 voice: {save_path}")
+        return save_path
     except Exception as e:
-        print("pyttsx3 fallback failed:", e)
-        traceback.print_exc()
-
-    raise RuntimeError("No TTS engine available on this machine.")
+        print(f"❌ Fallback TTS failed: {e}")
+        # create silent file placeholder
+        with open(save_path, "wb") as f:
+            f.write(b"")
+        return save_path

@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-  <h2>Register Candidate</h2>
-  <form method="post">
-    <label>Name</label>
-    <input type="text" name="name" required>
 
-    <label>Email</label>
-    <input type="email" name="email" required>
+<section class="register-section animate-fade-in">
+  <div class="register-container">
+    <h2>Register Candidate</h2>
+    <form action="{{ url_for('register') }}" method="POST" class="register-form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+      </div>
 
-    <label>Target Role (optional)</label>
-    <input type="text" name="role" placeholder="e.g., Data Analyst">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      </div>
 
-    <button class="btn" type="submit">Continue</button>
-  </form>
-</div>
+      <div class="form-group">
+        <label for="role">Target Role (Optional)</label>
+        <input type="text" id="role" name="role" placeholder="e.g., Data Analyst">
+      </div>
+
+      <button type="submit" class="btn-submit">Continue</button>
+    </form>
+  </div>
+</section>
+
 {% endblock %}

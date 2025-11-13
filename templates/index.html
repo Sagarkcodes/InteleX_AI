@@ -1,23 +1,74 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="home-wrapper">
-  <div class="logo-container">
-    <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="InteleX+" class="logo animate-fade-in">
-  </div>
 
-  <h1 class="animate-slide-up">Welcome to <span class="highlight">InteleX+</span></h1>
-  <p class="tagline animate-fade-in">Your AI-Powered Smart Hiring Assistant</p>
-
-  <div class="info-box animate-slide-up">
-    <p>
-      <b>InteleX+</b> revolutionizes recruitment using modern <span class="highlight">AI</span> to assess candidates
-      with Resume, Voice and (later) Video analysis.
+<!-- ================= HERO SECTION ================= -->
+<section class="hero-section animate-fade-in">
+  <div class="hero-content">
+    <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" alt="InteleX AI Logo" class="hero-logo">
+    <h1>InteleX AI</h1>
+    <p class="tagline">Your AI-powered Interview Practice Partner</p>
+    <p class="subtagline">
+      Refine your confidence, tone, and communication through real-time AI interviews.
+      Learn, improve, and grow — anytime, anywhere.
     </p>
-    <p>Start the assessment to get a professional AI-based report.</p>
+    <a href="{{ url_for('register') }}" class="btn hero-btn">Start Practice</a>
   </div>
 
-  <div class="button-group animate-fade-in">
-    <a class="btn" href="{{ url_for('register') }}">Start →</a>
+  <div class="scroll-down">
+    <a href="#learn-more">Scroll to Learn More ↓</a>
   </div>
-</div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="learn-more" class="how-it-works animate-slide-up">
+  <h2>🎯 How It Works</h2>
+  <div class="steps-container">
+    <div class="step-card">
+      <span class="step-number">1</span>
+      <h3>Register</h3>
+      <p>Sign up with your basic details and start your journey toward mastering interviews.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-number">2</span>
+      <h3>Speak with AI</h3>
+      <p>Answer personalized questions in a realistic AI interview simulation.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-number">3</span>
+      <h3>Get Instant Feedback</h3>
+      <p>Receive a professional personality and communication analysis immediately after.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="feature-section animate-slide-up">
+  <h2>💡 Platform Highlights</h2>
+  <div class="feature-card">
+    <h3>🎤 Voice-Based Interaction</h3>
+    <p>Speak naturally and let the AI assess your tone, pace, and confidence.</p>
+  </div>
+
+  <div class="feature-card">
+    <h3>📊 Personality Insights</h3>
+    <p>Understand your personality traits through scientifically backed voice analysis.</p>
+  </div>
+
+  <div class="feature-card">
+    <h3>📈 Continuous Improvement</h3>
+    <p>Each session helps you learn and improve — practice smarter, not harder.</p>
+  </div>
+</section>
+
+<!-- ================= BENEFITS ================= -->
+<section class="benefits-section animate-fade-in">
+  <h2>🚀 Why Students Love InteleX_AI</h2>
+  <ul class="benefits-list">
+    <li>✅ Real interview-like practice, anytime.</li>
+    <li>✅ AI-generated personalized feedback.</li>
+    <li>✅ User-friendly and free for students.</li>
+    <li>✅ Tracks your growth with every attempt.</li>
+  </ul>
+</section>
+
 {% endblock %}
