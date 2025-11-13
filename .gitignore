@@ -10,3 +10,14 @@ static/uploads/
 .vscode/
 .idea/
 .env
+# Large model files
+dataset/archive.zip
+ai_module/voice_model.joblib
+
+# Common large files
+*.zip
+*.joblib
+*.pt
+*.pth
+*.h5
+*.onnx
