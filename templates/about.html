@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="about-hero">
+    <h1 class="about-title">About InteleX AI</h1>
+    <p class="about-tagline">
+        A next-generation AI Interview Assessment System designed to elevate confidence, improve communication, 
+        and deliver real-time insights — built for students, job seekers, and professionals.
+    </p>
+</div>
+
+<div class="about-section">
+
+    <h2 class="section-heading">What We Do</h2>
+    <p class="section-text">
+        InteleX AI simulates a real interview experience using advanced machine learning and AI models.
+        It evaluates your tone, clarity, communication skills, confidence, and responsiveness — 
+        all while generating tailored questions based on your resume and specific skills.
+    </p>
+
+</div>
+
+
+<div class="feature-section">
+
+    <h2 class="section-heading">Key Features</h2>
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+            <span class="feature-icon">🎤</span>
+            <h3>Voice Personality Analysis</h3>
+            <p>Analyze tone, pitch, pacing, clarity, and map them to Big Five Personality Traits.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">📄</span>
+            <h3>Resume-Based Questioning</h3>
+            <p>AI reads your resume and generates role-based, skill-appropriate interview questions.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">🎥</span>
+            <h3>Video Interview Simulation</h3>
+            <p>Face-to-face style interview simulation with camera, timing, and real-time prompts.</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3>Real-Time AI Responses</h3>
+            <p>AI-driven interview flow with instant question follow-ups and dynamic interactions.</p>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="workflow-section">
+
+    <h2 class="section-heading">How It Works</h2>
+
+    <div class="workflow-steps">
+
+        <div class="workflow-card">
+            <h3>1. Register</h3>
+            <p>Create your profile to begin your personalized AI interview journey.</p>
+        </div>
+
+        <div class="workflow-card">
+            <h3>2. Upload Resume</h3>
+            <p>Your resume is securely analyzed to extract key skills and experience.</p>
+        </div>
+
+        <div class="workflow-card">
+            <h3>3. Voice Assessment</h3>
+            <p>Record your speech sample to generate your voice-based personality insights.</p>
+        </div>
+
+        <div class="workflow-card">
+            <h3>4. Live Interview</h3>
+            <p>Participate in an AI-driven video interview with real-time scoring.</p>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="tech-section">
+
+    <h2 class="section-heading">Technology Stack</h2>
+
+    <div class="tech-grid">
+
+        <div class="tech-item">Flask (Backend)</div>
+        <div class="tech-item">JavaScript (Frontend)</div>
+        <div class="tech-item">Ollama + LLaMA3</div>
+        <div class="tech-item">Coqui TTS — VCTK/VITS</div>
+        <div class="tech-item">Python ML Toolkit</div>
+        <div class="tech-item">MediaRecorder API</div>
+
+    </div>
+</div>
+
+
+<footer class="about-footer">
+    © {{ current_year }} InteleX AI — Built for Smarter Interview Experiences
+</footer>
+
+{% endblock %}

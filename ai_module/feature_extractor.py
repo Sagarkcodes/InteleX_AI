@@ -30,3 +30,6 @@ def extract_features(audio_path):
     except Exception as e:
         print(f"⚠️ Error processing {audio_path}: {e}")
         return np.zeros(39)  # Return empty vector if error occurs
+
+
+

@@ -1,52 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="no-navbar"></div>
 
-<section class="video-layout">
+<div class="interview-container">
 
     <!-- LEFT SIDE -->
-    <div class="left-col">
+    <div class="left-section">
 
-        <!-- Floating Agent Avatar -->
-        <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" 
-             class="agent-avatar-video pulse-glow" />
-
-        <!-- QUESTION BOX -->
-        <div class="question-box-big">
-            <h3>AI Question</h3>
-            <p id="viQuestion">Preparing your interview…</p>
+        <div class="agent-section">
+            <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}"
+                 class="agent-logo spin-glow" />
         </div>
+
+        <div class="question-box">
+    <h2>AI Question</h2>
+
+    <p id="questionText">Preparing your interview…</p>
+
+    <!-- BUTTONS at bottom -->
+    <div class="question-footer">
+        <button id="submitAnswer" class="q-btn submit-btn">Submit</button>
+        
+    </div>
+</div>
 
     </div>
 
     <!-- RIGHT SIDE -->
-    <div class="right-col">
+    <div class="right-section">
 
-        <!-- CAMERA -->
-        <div class="camera-box-small">
-            <video id="preview" autoplay playsinline muted></video>
+        <div class="camera-box">
+            <video id="camera" autoplay muted playsinline></video>
         </div>
 
-        <!-- TIMERS -->
-        <div class="timers-row">
-            <span>Time Left: <strong id="totalTimerDisplay">05:00</strong></span>
-            <span>Pause Time: <strong id="pauseTimerDisplay">5s</strong></span>
-        </div>
+        <div class="right-info-block">
+  <!-- camera is separate above this block -->
+  <div class="timer-row">
+    <span class="timer-pill">⏱ Time left: <strong id="timeLeft">05:00</strong></span>
+    <span class="timer-pill">🗣 Speak in: <strong id="pauseTime">00s</strong></span>
 
-        <!-- INSTRUCTIONS -->
-        <div class="instructions-box">
-            <h3>Instructions</h3>
-            <ul>
-                <li>Keep your face centered in the camera.</li>
-                <li>Maintain eye contact.</li>
-                <li>No other devices allowed.</li>
-                <li>You must start answering within 5 seconds.</li>
-            </ul>
-        </div>
+  </div>
 
-    </div>
+  <div class="instructions-inline" aria-live="polite">
+    <h4>Instructions</h4>
+    <ul class="instr-list">
+        <li>Keep your face centered in the camera.</li>
+        <li>Maintain eye contact.</li>
+        <li>No other devices allowed.</li>
+        <li>You must start answering within 5 seconds.</li>
+    </ul>
+</div>
 
-</section>
+
+
+</div>
 
 <script src="{{ url_for('static', filename='js/video_interview.js') }}"></script>
+
 {% endblock %}
+    

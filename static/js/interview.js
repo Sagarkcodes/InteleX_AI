@@ -51,10 +51,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   instruction.textContent = greetingText;
   speakOnce(greetingText);
 
-  // 🧩 Step 2 — Load paragraph immediately (no delay)
+  // 🧩 Step 2 — Load paragraph immediately (FIXED ENDPOINT)
   try {
-    const res = await fetch("/next-question");
+    const res = await fetch("/next-paragraph");
     const data = await res.json();
+
     const paragraph =
       data.paragraph ||
       "Artificial Intelligence is transforming the way we interact with technology and data. It enables machines to adapt, reason, and respond intelligently to the world around them.";

@@ -1,130 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="InteleX AI — An AI-powered Interview Practice Platform for Students" />
-  <title>InteleX_AI</title>
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-  <!-- Main Styles -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  
-  <style>
-    /* Quick reset for consistent layout */
-    html, body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #0b0c0e;
-      color: #D8D8DA;
-      scroll-behavior: smooth;
-    }
-
-    /* Navbar styling */
-    nav.navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 36px;
-      background: linear-gradient(90deg, #030712, #0F172A);
-      box-shadow: 0 2px 10px rgba(0, 255, 200, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .navbar-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .navbar-left img {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      filter: drop-shadow(0 0 10px rgba(0, 255, 200, 0.3));
-    }
-
-    .navbar-left span {
-      color: #00E4C8;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    .navbar-right a {
-      color: #D8D8DA;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: 500;
-      font-size: 15px;
-      transition: 0.3s ease;
-    }
-
-    .navbar-right a:hover {
-      color: #00FFBF;
-      text-shadow: 0 0 8px #00FFBF;
-    }
-
-    /* Content container */
-    main {
-      padding: 30px 20px;
-      min-height: 80vh;
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 20px 0;
-      color: #A8A8A8;
-      border-top: 1px solid #1E1F22;
-      font-size: 14px;
-    }
-
-    /* Smooth animations */
-    .animate-fade-in {
-      opacity: 0;
-      animation: fadeIn 1.2s ease forwards;
-    }
-    .animate-slide-up {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: slideUp 1.2s ease forwards;
-    }
-
-    @keyframes fadeIn { to { opacity: 1; } }
-    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InteleX AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="navbar-left">
-      <img src="{{ url_for('static', filename='img/InteleX_logo2.png') }}" alt="InteleX Logo" />
-      <span>InteleX_AI</span>
-    </div>
 
-    <div class="navbar-right">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('register') }}">Register</a>
-      <a href="{{ url_for('resume') }}">Upload Resume</a>
-      <a href="{{ url_for('interview') }}">Voice Practice</a>
-    </div>
-  </nav>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="{{ url_for('static', filename='img/InteleX_logo.png') }}" class="nav-logo" alt="InteleX_AI Logo">
+            <span class="nav-title">InteleX_AI</span>
+        </div>
 
-  <!-- MAIN CONTENT -->
-  <main>
+        <div class="navbar-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+
     {% block content %}{% endblock %}
-  </main>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2025 InteleX_AI — AI Interview Practice Platform for Students</p>
-  </footer>
 </body>
 </html>

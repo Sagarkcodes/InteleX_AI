@@ -2,6 +2,7 @@ venv/
 __pycache__/
 *.pyc
 static/uploads/
+/uploads/
 *.wav
 *.webm
 *.mp3
@@ -10,6 +11,8 @@ static/uploads/
 .vscode/
 .idea/
 .env
+ai_module/.env
+instance/
 # Large model files
 dataset/archive.zip
 ai_module/voice_model.joblib

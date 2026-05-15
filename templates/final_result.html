@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="result-container">
+
+    <!-- HEADER -->
+    <div class="result-header">
+        <h1>AI Interview Report</h1>
+        <p class="candidate-name">{{ result.name }}</p>
+    </div>
+
+    <div class="result-card">
+
+        <!-- SCORE -->
+        <div class="score-section">
+            <h2>Overall Score</h2>
+            <div class="score-circle">
+                {{ result.score }} <span>/10</span>
+            </div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="skills-section">
+            <h3>Detected Skills</h3>
+            <div class="skills-tags">
+                {% for skill in result.skills %}
+                    <span class="skill-tag">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 🔥 ANALYSIS SECTION -->
+        <div class="analysis-section">
+            <h3>Communication Analysis</h3>
+
+            <div class="analysis-grid">
+                <div class="metric">
+                    <p>Confidence</p>
+                    <span>{{ analysis.confidence }}%</span>
+                </div>
+
+                <div class="metric">
+                    <p>Clarity</p>
+                    <span>{{ analysis.clarity }}%</span>
+                </div>
+
+                <div class="metric">
+                    <p>Communication</p>
+                    <span>{{ analysis.communication }}%</span>
+                </div>
+            </div>
+
+            <p class="analysis-summary">
+                {{ analysis.summary }}
+            </p>
+        </div>
+
+        <!-- FEEDBACK -->
+        <div class="feedback-section">
+            <h3>AI Feedback</h3>
+            <p>{{ result.feedback }}</p>
+        </div>
+
+        <!-- ACTION -->
+        <div class="result-actions">
+            <a href="/" class="btn-primary-glow">Take Another Interview</a>
+            <a href="/dashboard" class="btn-secondary-outline">Go to Dashboard</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
