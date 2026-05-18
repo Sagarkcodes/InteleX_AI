@@ -2,37 +2,114 @@
 {% block content %}
 
 <div class="dashboard-container">
-    
-    <h1 class="dashboard-title">Your Dashboard</h1>
 
-    <p class="dashboard-subtitle">
-        View your interview results, personality insights, reports, and progress — 
-        all in one place.
-    </p>
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">📊 Dashboard</h1>
+        <p class="dashboard-subtitle">
+            All candidates who have gone through the InteleX AI interview pipeline.
+        </p>
+    </div>
 
-    <div class="dashboard-grid">
+    <!-- STAT CARDS -->
+    <div class="dash-stats-row">
 
-        <div class="dash-card">
-            <h3>📊 Personality Report</h3>
-            <p>Analyze your Big Five personality traits from your voice assessment.</p>
+        <div class="dash-stat-card">
+            <span class="dash-stat-icon">👥</span>
+            <div class="dash-stat-info">
+                <p class="dash-stat-label">Total Candidates</p>
+                <p class="dash-stat-value">{{ stats.total_candidates }}</p>
+            </div>
         </div>
 
-        <div class="dash-card">
-            <h3>📄 Resume-Based Insights</h3>
-            <p>See extracted skills and how they impact your interview questions.</p>
+        <div class="dash-stat-card">
+            <span class="dash-stat-icon">✅</span>
+            <div class="dash-stat-info">
+                <p class="dash-stat-label">Completed Interviews</p>
+                <p class="dash-stat-value">{{ stats.total_completed }}</p>
+            </div>
         </div>
 
-        <div class="dash-card">
-            <h3>🎥 Video Interview Results</h3>
-            <p>View your performance summary, key metrics, and interviewer feedback.</p>
-        </div>
-
-        <div class="dash-card">
-            <h3>📁 Download Reports</h3>
-            <p>Download complete PDF reports generated after each session.</p>
+        <div class="dash-stat-card">
+            <span class="dash-stat-icon">🔄</span>
+            <div class="dash-stat-info">
+                <p class="dash-stat-label">In Progress</p>
+                <p class="dash-stat-value">{{ stats.total_in_progress }}</p>
+            </div>
         </div>
 
     </div>
+
+    <!-- CANDIDATE TABLE -->
+    {% if dashboard_data %}
+    <div class="dash-table-wrapper">
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Candidate</th>
+                    <th>Email</th>
+                    <th>Target Role</th>
+                    <th>Skills</th>
+                    <th>Sessions</th>
+                    <th>Last Status</th>
+                    <th>Last Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in dashboard_data %}
+                <tr>
+                    <td class="dash-num">{{ loop.index }}</td>
+
+                    <td class="dash-name">{{ item.name }}</td>
+
+                    <td class="dash-email">{{ item.email }}</td>
+
+                    <td class="dash-role">{{ item.role }}</td>
+
+                    <td class="dash-skills">
+                        {% for skill in item.skills %}
+                            <span class="dash-skill-tag">{{ skill }}</span>
+                        {% endfor %}
+                        {% if not item.skills %}
+                            <span class="dash-empty">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="dash-center">
+                        <span class="dash-session-badge">
+                            {{ item.completed_sessions }} / {{ item.total_sessions }}
+                        </span>
+                    </td>
+
+                    <td class="dash-center">
+                        {% if item.last_status == "completed" %}
+                            <span class="dash-status completed">Completed</span>
+                        {% elif item.last_status == "in_progress" %}
+                            <span class="dash-status in-progress">In Progress</span>
+                        {% else %}
+                            <span class="dash-status unknown">{{ item.last_status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="dash-date">{{ item.last_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="dash-empty-state">
+        <p class="dash-empty-icon">🎯</p>
+        <h3>No candidates yet</h3>
+        <p>Once candidates complete their interviews, they'll appear here.</p>
+        <a href="/register" class="btn-primary-glow" style="margin-top: 20px; display: inline-block;">
+            Start an Interview
+        </a>
+    </div>
+    {% endif %}
 
 </div>
 

@@ -7,7 +7,7 @@ from ai_module.llm_engine import (
     ask_continue_question,
     generate_followup_question
 )
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, make_response
 import json
 import os
 from datetime import datetime
@@ -80,7 +80,7 @@ def convert_to_wav(input_path):
         cmd = [
             "ffmpeg",
             "-y",
-            "-f", "webm",          
+            "-f", "webm",
             "-i", input_path,
             "-vn",
             "-acodec", "pcm_s16le",
@@ -104,6 +104,7 @@ def convert_to_wav(input_path):
     except Exception as e:
         print(" Conversion exception:", e)
         return input_path
+
 
 def default_interview_state():
     return {
@@ -318,21 +319,15 @@ def resume():
 
         try:
             if ext == "pdf":
-
                 import PyPDF2
-
                 with open(save_path, "rb") as f:
                     reader = PyPDF2.PdfReader(f)
-
                     for page in reader.pages:
                         resume_text += (page.extract_text() or "") + "\n"
 
             elif ext in ("doc", "docx"):
-
                 import docx
-
                 doc = docx.Document(save_path)
-
                 for p in doc.paragraphs:
                     resume_text += p.text + "\n"
 
@@ -340,36 +335,26 @@ def resume():
             print("Resume text extraction error:", e)
             resume_text = ""
 
-        # ---------------- IMPROVED SKILL + PROJECT EXTRACTION ----------------
+        # ---------------- SKILL + PROJECT EXTRACTION ----------------
         try:
-
             extracted = extract_resume_skills(resume_text) if resume_text else []
-
             skills = []
             projects = []
             seen = set()
 
             for item in extracted:
-
                 val = item.strip()
-
                 if not val:
                     continue
-
                 key = val.lower()
-
                 if key in seen:
                     continue
-
                 seen.add(key)
-
-                # simple heuristic: detect project names
                 if "project" in key or "system" in key or "application" in key or "app" in key:
                     projects.append(val)
                 else:
                     skills.append(val)
 
-            # limit counts
             skills = skills[:8]
             projects = projects[:5]
 
@@ -380,7 +365,6 @@ def resume():
 
         session["resume_skills"] = skills
         session["resume_projects"] = projects
-        # ---------------------------------------------------------------------
 
         session["user_name"] = resolve_candidate_name(resume_text)
         upsert_candidate_record(
@@ -402,9 +386,7 @@ def resume():
 def interview():
     if not session.get("resume_file"):
         return redirect(url_for("resume"))
-
     name = session.get("user_name", "Candidate")
-
     return render_template("interview.html", name=name)
 
 
@@ -421,7 +403,6 @@ def next_question():
         return jsonify({"error": "No audio received"}), 400
 
     audio_file = request.files["audio"]
-
     filename = timestamped_filename(audio_file.filename or "answer.webm")
     save_path = os.path.join(UPLOAD_FOLDER, filename)
     audio_file.save(save_path)
@@ -441,27 +422,46 @@ def next_question():
     struggling = detect_candidate_struggle(transcript)
     followup_question = generate_followup_question(transcript)
 
+    # ---------------- ACCUMULATE AUDIO SCORES PER ANSWER ----------------
+    from ai_module.feature_extractor import score_audio
+    answer_scores = score_audio(save_path)
+    all_audio_scores = session.get("all_audio_scores", [])
+    all_audio_scores.append(answer_scores)
+    session["all_audio_scores"] = all_audio_scores
+    session.modified = True
+
     # ---------------- FINAL RESULT ----------------
     if state["answers_received"] >= state["max_questions"]:
 
-        score = min(10, len(transcript.split()) / 5)
+        avg_confidence    = round(sum(s["confidence"]    for s in all_audio_scores) / len(all_audio_scores), 1)
+        avg_clarity       = round(sum(s["clarity"]       for s in all_audio_scores) / len(all_audio_scores), 1)
+        avg_communication = round(sum(s["communication"] for s in all_audio_scores) / len(all_audio_scores), 1)
+        score             = round(sum(s["overall"]       for s in all_audio_scores) / len(all_audio_scores), 2)
+
+        if score >= 7.5:
+            summary = "Outstanding performance. The candidate communicated with strong confidence, clarity, and fluency."
+        elif score >= 6.0:
+            summary = "Good overall performance. The candidate showed solid communication with room to improve in some areas."
+        elif score >= 4.5:
+            summary = "Decent performance. The candidate can benefit from practising more structured and confident responses."
+        else:
+            summary = "The candidate may benefit from working on vocal confidence, clarity, and speech fluency."
 
         final_result = {
             "name": name,
             "skills": skills,
-            "score": round(score, 2),
+            "score": score,
             "feedback": feedback,
-
-            #  ANALYSIS (FOR FINAL PAGE)
             "analysis": {
-                "confidence": round(score * 10, 1),
-                "clarity": round(score * 8, 1),
-                "communication": round(score * 9, 1),
-                "summary": "The candidate shows decent communication skills but can improve clarity and confidence."
+                "confidence": avg_confidence,
+                "clarity": avg_clarity,
+                "communication": avg_communication,
+                "summary": summary
             }
         }
 
         session["final_result"] = final_result
+        session.pop("all_audio_scores", None)
         session.modified = True
 
         sync_interview_session_record(state, status="completed", completed=True)
@@ -499,17 +499,72 @@ def next_question():
 # ---------------------- FINAL RESULT ROUTE ----------------------
 @app.route("/final-result")
 def final_result_page():
-
     result = session.get("final_result")
-
     if not result:
         return redirect(url_for("home"))
-
     return render_template(
         "final_result.html",
         result=result,
         analysis=result.get("analysis", {})
     )
+
+
+# ---------------------- DOWNLOAD REPORT ----------------------
+@app.route("/download-report")
+def download_report():
+    """Generate and stream a plain-text interview report as a downloadable .txt file."""
+    result = session.get("final_result")
+    if not result:
+        return redirect(url_for("home"))
+
+    analysis = result.get("analysis", {})
+    skills   = result.get("skills", [])
+    name     = result.get("name", "Candidate")
+    score    = result.get("score", "N/A")
+    feedback = result.get("feedback", "No feedback available.")
+    date_str = datetime.now().strftime("%d %B %Y, %I:%M %p")
+
+    lines = [
+        "=" * 60,
+        "          INTELEX AI — INTERVIEW REPORT",
+        "=" * 60,
+        "",
+        f"  Candidate  : {name}",
+        f"  Date       : {date_str}",
+        f"  Score      : {score} / 10",
+        "",
+        "-" * 60,
+        "  COMMUNICATION ANALYSIS",
+        "-" * 60,
+        f"  Confidence    : {analysis.get('confidence', 'N/A')}%",
+        f"  Clarity       : {analysis.get('clarity', 'N/A')}%",
+        f"  Communication : {analysis.get('communication', 'N/A')}%",
+        "",
+        f"  Summary: {analysis.get('summary', '')}",
+        "",
+        "-" * 60,
+        "  DETECTED SKILLS",
+        "-" * 60,
+        f"  {', '.join(skills) if skills else 'No skills detected.'}",
+        "",
+        "-" * 60,
+        "  AI FEEDBACK",
+        "-" * 60,
+        f"  {feedback}",
+        "",
+        "=" * 60,
+        "  Generated by InteleX AI  |  intelex.ai",
+        "=" * 60,
+    ]
+
+    report_text = "\n".join(lines)
+    safe_name = name.replace(" ", "_")
+
+    response = make_response(report_text)
+    response.headers["Content-Disposition"] = f'attachment; filename="InteleX_Report_{safe_name}.txt"'
+    response.headers["Content-Type"] = "text/plain"
+    return response
+
 
 # ---------------------- TTS ----------------------
 @app.route("/tts", methods=["POST"])
@@ -522,12 +577,10 @@ def tts_route():
 
     try:
         audio_path = say_text_to_file(text, filename="intelx_greeting.wav")
-
         for _ in range(10):
             if os.path.exists(audio_path):
                 break
             time.sleep(0.1)
-
         return jsonify({"success": True, "audio": "/" + audio_path.replace("\\", "/")})
 
     except Exception as e:
@@ -537,28 +590,20 @@ def tts_route():
 # ---------------------- NEXT PARAGRAPH ----------------------
 @app.route("/next-paragraph", methods=["GET"])
 def next_paragraph():
-
     name = session.get("user_name", "Candidate")
-
     try:
         paragraph = generate_personality_paragraph(name)
-
     except Exception as e:
         print("Paragraph generation error:", e)
         paragraph = "Please read this passage clearly and confidently."
 
-    return jsonify({
-        "success": True,
-        "paragraph": paragraph
-    })
+    return jsonify({"success": True, "paragraph": paragraph})
 
 
 # ---------------------- AUDIO UPLOAD ----------------------
 @app.route("/upload-audio", methods=["POST"])
 def upload_audio():
-
     file = None
-
     for key in ("audio_data", "audio", "file"):
         if key in request.files:
             file = request.files[key]
@@ -573,16 +618,12 @@ def upload_audio():
         filename = os.path.splitext(filename)[0] + ".webm"
 
     safe_name = timestamped_filename(filename)
-
     saved_path = os.path.join(UPLOAD_FOLDER, safe_name)
-
     file.save(saved_path)
-
     wav_path = convert_to_wav(saved_path)
 
     try:
         result = analyze_voice(wav_path)
-
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
@@ -606,14 +647,12 @@ def upload_audio():
 def analysis_result():
     raw_traits = session.get("analysis_result", {})
     traits = {}
-
     if isinstance(raw_traits, dict):
         for key, value in raw_traits.items():
             try:
                 traits[key] = round(float(value), 2)
             except (TypeError, ValueError):
                 traits[key] = value
-
     return render_template("analysis_result.html", traits=traits)
 
 
@@ -622,7 +661,6 @@ def analysis_result():
 def video_interview():
     if not session.get("resume_file"):
         return redirect(url_for("resume"))
-
     print("Session Name:", session.get("user_name"))
     return render_template("video_interview.html")
 
@@ -637,11 +675,7 @@ def video_interview_start():
     profile = get_candidate_profile()
 
     greeting_text = f"Hi {name}, I'm InteleX, your AI interviewer today. Let's begin."
-
-    instructions_text = (
-        "Please keep your face centered, maintain eye contact, and answer clearly."
-    )
-
+    instructions_text = "Please keep your face centered, maintain eye contact, and answer clearly."
     praise_text = (
         f"I noticed you have experience in {skills[0]}. That's impressive."
         if skills else
@@ -670,16 +704,12 @@ def video_interview_start():
 # ---------------------- VIDEO UPLOAD ----------------------
 @app.route("/upload-video", methods=["POST"])
 def upload_video():
-
     if "video" not in request.files:
         return jsonify({"success": False, "error": "No video file received."}), 400
 
     file = request.files["video"]
-
     filename = timestamped_filename(file.filename or "video.webm")
-
     save_path = os.path.join(UPLOAD_FOLDER, filename)
-
     file.save(save_path)
 
     return jsonify({
@@ -693,9 +723,53 @@ def about_page():
     return render_template("about.html", current_year=datetime.now().year)
 
 
+# ---------------------- DASHBOARD ----------------------
 @app.route("/dashboard")
 def dashboard_page():
-    return render_template("dashboard.html")
+    candidates = Candidate.query.order_by(Candidate.created_at.desc()).all()
+
+    dashboard_data = []
+    total_completed = 0
+    total_in_progress = 0
+
+    for candidate in candidates:
+        sessions = candidate.interview_sessions
+        completed = [s for s in sessions if s.status == "completed"]
+        in_progress = [s for s in sessions if s.status == "in_progress"]
+        total_completed += len(completed)
+        total_in_progress += len(in_progress)
+
+        try:
+            skills = json.loads(candidate.skills_json) if candidate.skills_json else []
+        except Exception:
+            skills = []
+
+        last_session = sessions[-1] if sessions else None
+        last_status = last_session.status if last_session else "N/A"
+        last_date = (
+            last_session.completed_at.strftime("%d %b %Y")
+            if last_session and last_session.completed_at
+            else (last_session.created_at.strftime("%d %b %Y") if last_session else "—")
+        )
+
+        dashboard_data.append({
+            "name": candidate.name,
+            "email": candidate.email or "—",
+            "role": candidate.target_role or "—",
+            "skills": skills[:4],
+            "total_sessions": len(sessions),
+            "completed_sessions": len(completed),
+            "last_status": last_status,
+            "last_date": last_date,
+        })
+
+    stats = {
+        "total_candidates": len(candidates),
+        "total_completed": total_completed,
+        "total_in_progress": total_in_progress,
+    }
+
+    return render_template("dashboard.html", dashboard_data=dashboard_data, stats=stats)
 
 
 # ---------------------- MAIN ----------------------
