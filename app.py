@@ -502,10 +502,20 @@ def final_result_page():
     result = session.get("final_result")
     if not result:
         return redirect(url_for("home"))
+    raw_traits = session.get("analysis_result", {})
+    traits = {}
+    if isinstance(raw_traits, dict):
+        for key, value in raw_traits.items():
+            try:
+                traits[key] = round(float(value), 2)
+            except (TypeError, ValueError):
+                traits[key] = value
+
     return render_template(
         "final_result.html",
         result=result,
-        analysis=result.get("analysis", {})
+        analysis=result.get("analysis", {}),
+        traits=traits
     )
 
 
@@ -637,7 +647,7 @@ def upload_audio():
 
     return jsonify({
         "success": True,
-        "redirect": url_for("analysis_result"),
+        "redirect": url_for("video_interview"),
         "result": result
     })
 
@@ -752,15 +762,29 @@ def dashboard_page():
             else (last_session.created_at.strftime("%d %b %Y") if last_session else "—")
         )
 
+        # Extract best score from completed sessions
+        best_score = None
+        for s in completed:
+            try:
+                ar = json.loads(s.analysis_result_json) if s.analysis_result_json else {}
+                sc = ar.get("score") or ar.get("overall")
+                if sc is not None:
+                    val = float(sc)
+                    if best_score is None or val > best_score:
+                        best_score = round(val, 1)
+            except Exception:
+                pass
+
         dashboard_data.append({
             "name": candidate.name,
             "email": candidate.email or "—",
             "role": candidate.target_role or "—",
-            "skills": skills[:4],
+            "skills": skills[:5],
             "total_sessions": len(sessions),
             "completed_sessions": len(completed),
             "last_status": last_status,
             "last_date": last_date,
+            "score": best_score,
         })
 
     stats = {
@@ -768,6 +792,9 @@ def dashboard_page():
         "total_completed": total_completed,
         "total_in_progress": total_in_progress,
     }
+
+    # Sort by score descending for ranking (unscored candidates go to bottom)
+    dashboard_data.sort(key=lambda x: (x["score"] is None, -(x["score"] or 0)))
 
     return render_template("dashboard.html", dashboard_data=dashboard_data, stats=stats)
 

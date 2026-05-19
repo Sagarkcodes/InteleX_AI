@@ -1,113 +1,208 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="dashboard-container">
+<div class="db-page">
 
-    <!-- HEADER -->
-    <div class="dashboard-header">
-        <h1 class="dashboard-title">📊 Dashboard</h1>
-        <p class="dashboard-subtitle">
-            All candidates who have gone through the InteleX AI interview pipeline.
-        </p>
+    <!-- PAGE HEADER -->
+    <div class="db-header">
+        <div>
+            <h1 class="db-title">Candidate Rankings</h1>
+            <p class="db-subtitle">All candidates ranked by interview performance score</p>
+        </div>
+        <a href="/register" class="fr-btn fr-btn-primary" style="align-self:center;">+ New Interview</a>
     </div>
 
-    <!-- STAT CARDS -->
-    <div class="dash-stats-row">
-
-        <div class="dash-stat-card">
-            <span class="dash-stat-icon">👥</span>
-            <div class="dash-stat-info">
-                <p class="dash-stat-label">Total Candidates</p>
-                <p class="dash-stat-value">{{ stats.total_candidates }}</p>
+    <!-- STAT STRIP -->
+    <div class="db-stat-strip">
+        <div class="db-stat">
+            <span class="db-stat-icon">👥</span>
+            <div>
+                <p class="db-stat-num">{{ stats.total_candidates }}</p>
+                <p class="db-stat-lbl">Total Candidates</p>
             </div>
         </div>
-
-        <div class="dash-stat-card">
-            <span class="dash-stat-icon">✅</span>
-            <div class="dash-stat-info">
-                <p class="dash-stat-label">Completed Interviews</p>
-                <p class="dash-stat-value">{{ stats.total_completed }}</p>
+        <div class="db-stat-sep"></div>
+        <div class="db-stat">
+            <span class="db-stat-icon">✅</span>
+            <div>
+                <p class="db-stat-num">{{ stats.total_completed }}</p>
+                <p class="db-stat-lbl">Completed</p>
             </div>
         </div>
-
-        <div class="dash-stat-card">
-            <span class="dash-stat-icon">🔄</span>
-            <div class="dash-stat-info">
-                <p class="dash-stat-label">In Progress</p>
-                <p class="dash-stat-value">{{ stats.total_in_progress }}</p>
+        <div class="db-stat-sep"></div>
+        <div class="db-stat">
+            <span class="db-stat-icon">🔄</span>
+            <div>
+                <p class="db-stat-num">{{ stats.total_in_progress }}</p>
+                <p class="db-stat-lbl">In Progress</p>
             </div>
         </div>
-
+        <div class="db-stat-sep"></div>
+        <div class="db-stat">
+            <span class="db-stat-icon">🏆</span>
+            <div>
+                <p class="db-stat-num">
+                    {% set top = namespace(val="—") %}
+                    {% for item in dashboard_data %}
+                        {% if item.score is not none and loop.first %}
+                            {% set top.val = item.score %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ top.val }}
+                </p>
+                <p class="db-stat-lbl">Top Score</p>
+            </div>
+        </div>
     </div>
 
-    <!-- CANDIDATE TABLE -->
+    <!-- LEADERBOARD -->
     {% if dashboard_data %}
-    <div class="dash-table-wrapper">
-        <table class="dash-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Candidate</th>
-                    <th>Email</th>
-                    <th>Target Role</th>
-                    <th>Skills</th>
-                    <th>Sessions</th>
-                    <th>Last Status</th>
-                    <th>Last Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in dashboard_data %}
-                <tr>
-                    <td class="dash-num">{{ loop.index }}</td>
+    <div class="db-board">
 
-                    <td class="dash-name">{{ item.name }}</td>
+        <!-- TOP 3 PODIUM (only if 3+ with scores) -->
+        {% set scored = [] %}
+        {% for item in dashboard_data %}
+            {% if item.score is not none %}
+                {% if scored.append(item) %}{% endif %}
+            {% endif %}
+        {% endfor %}
 
-                    <td class="dash-email">{{ item.email }}</td>
+        {% if scored | length >= 3 %}
+        <div class="db-podium">
+            <!-- 2nd -->
+            <div class="db-podium-card db-podium-2">
+                <div class="db-podium-avatar">{{ scored[1].name[0] | upper }}</div>
+                <p class="db-podium-name">{{ scored[1].name }}</p>
+                <p class="db-podium-role">{{ scored[1].role }}</p>
+                <div class="db-podium-score">{{ scored[1].score }}</div>
+                <div class="db-podium-rank">2nd</div>
+                <div class="db-podium-bar db-bar-2"></div>
+            </div>
+            <!-- 1st -->
+            <div class="db-podium-card db-podium-1">
+                <div class="db-podium-crown">👑</div>
+                <div class="db-podium-avatar db-avatar-gold">{{ scored[0].name[0] | upper }}</div>
+                <p class="db-podium-name">{{ scored[0].name }}</p>
+                <p class="db-podium-role">{{ scored[0].role }}</p>
+                <div class="db-podium-score db-score-gold">{{ scored[0].score }}</div>
+                <div class="db-podium-rank db-rank-gold">1st</div>
+                <div class="db-podium-bar db-bar-1"></div>
+            </div>
+            <!-- 3rd -->
+            <div class="db-podium-card db-podium-3">
+                <div class="db-podium-avatar">{{ scored[2].name[0] | upper }}</div>
+                <p class="db-podium-name">{{ scored[2].name }}</p>
+                <p class="db-podium-role">{{ scored[2].role }}</p>
+                <div class="db-podium-score">{{ scored[2].score }}</div>
+                <div class="db-podium-rank">3rd</div>
+                <div class="db-podium-bar db-bar-3"></div>
+            </div>
+        </div>
+        {% endif %}
 
-                    <td class="dash-role">{{ item.role }}</td>
+        <!-- FULL RANKINGS TABLE -->
+        <div class="db-table-section">
+            <h3 class="db-section-label">All Candidates</h3>
+            <div class="db-table-wrap">
+                <table class="db-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Candidate</th>
+                            <th>Target Role</th>
+                            <th>Skills</th>
+                            <th>Score</th>
+                            <th>Sessions</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in dashboard_data %}
+                        <tr class="{% if loop.index == 1 and item.score is not none %}db-row-gold{% elif loop.index == 2 and item.score is not none %}db-row-silver{% elif loop.index == 3 and item.score is not none %}db-row-bronze{% endif %}">
 
-                    <td class="dash-skills">
-                        {% for skill in item.skills %}
-                            <span class="dash-skill-tag">{{ skill }}</span>
+                            <td class="db-rank-cell">
+                                {% if loop.index == 1 and item.score is not none %}
+                                    <span class="db-rank-medal">🥇</span>
+                                {% elif loop.index == 2 and item.score is not none %}
+                                    <span class="db-rank-medal">🥈</span>
+                                {% elif loop.index == 3 and item.score is not none %}
+                                    <span class="db-rank-medal">🥉</span>
+                                {% else %}
+                                    <span class="db-rank-num">{{ loop.index }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="db-cand-cell">
+                                    <div class="db-cand-avatar">{{ item.name[0] | upper }}</div>
+                                    <div>
+                                        <p class="db-cand-name">{{ item.name }}</p>
+                                        <p class="db-cand-email">{{ item.email }}</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="db-role">{{ item.role }}</td>
+
+                            <td>
+                                <div class="db-skills-cell">
+                                    {% for skill in item.skills %}
+                                    <span class="db-skill-tag">{{ skill }}</span>
+                                    {% endfor %}
+                                    {% if not item.skills %}
+                                    <span class="db-na">—</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <td>
+                                {% if item.score is not none %}
+                                <div class="db-score-cell">
+                                    <span class="db-score-num {% if item.score >= 7.5 %}db-score-hi{% elif item.score >= 5.0 %}db-score-mid{% else %}db-score-lo{% endif %}">
+                                        {{ item.score }}
+                                    </span>
+                                    <div class="db-score-bar-track">
+                                        <div class="db-score-bar-fill {% if item.score >= 7.5 %}db-fill-hi{% elif item.score >= 5.0 %}db-fill-mid{% else %}db-fill-lo{% endif %}"
+                                            style="width: {{ (item.score / 10 * 100) | round | int }}%"></div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="db-na">Not scored</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="db-center">
+                                <span class="db-sessions-badge">{{ item.completed_sessions }}/{{ item.total_sessions }}</span>
+                            </td>
+
+                            <td class="db-center">
+                                {% if item.last_status == "completed" %}
+                                <span class="db-status db-status-done">✓ Done</span>
+                                {% elif item.last_status == "in_progress" %}
+                                <span class="db-status db-status-wip">● Active</span>
+                                {% else %}
+                                <span class="db-status db-status-na">{{ item.last_status }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="db-date">{{ item.last_date }}</td>
+                        </tr>
                         {% endfor %}
-                        {% if not item.skills %}
-                            <span class="dash-empty">—</span>
-                        {% endif %}
-                    </td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                    <td class="dash-center">
-                        <span class="dash-session-badge">
-                            {{ item.completed_sessions }} / {{ item.total_sessions }}
-                        </span>
-                    </td>
-
-                    <td class="dash-center">
-                        {% if item.last_status == "completed" %}
-                            <span class="dash-status completed">Completed</span>
-                        {% elif item.last_status == "in_progress" %}
-                            <span class="dash-status in-progress">In Progress</span>
-                        {% else %}
-                            <span class="dash-status unknown">{{ item.last_status }}</span>
-                        {% endif %}
-                    </td>
-
-                    <td class="dash-date">{{ item.last_date }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 
     {% else %}
     <!-- EMPTY STATE -->
-    <div class="dash-empty-state">
-        <p class="dash-empty-icon">🎯</p>
+    <div class="db-empty">
+        <div class="db-empty-icon">🎯</div>
         <h3>No candidates yet</h3>
-        <p>Once candidates complete their interviews, they'll appear here.</p>
-        <a href="/register" class="btn-primary-glow" style="margin-top: 20px; display: inline-block;">
-            Start an Interview
-        </a>
+        <p>Start an interview to see rankings appear here.</p>
+        <a href="/register" class="fr-btn fr-btn-primary" style="margin-top:24px; display:inline-block;">Start First Interview</a>
     </div>
     {% endif %}
 

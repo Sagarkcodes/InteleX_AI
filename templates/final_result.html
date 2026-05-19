@@ -1,78 +1,197 @@
 {% extends "base.html" %}
-
 {% block content %}
 
-<div class="result-container">
+<div class="fr-page">
 
-    <!-- HEADER -->
-    <div class="result-header">
-        <h1>AI Interview Report</h1>
-        <p class="candidate-name">{{ result.name }}</p>
+    <!-- TOP HEADER -->
+    <div class="fr-header">
+        <div class="fr-header-left">
+            <span class="fr-badge">Interview Complete</span>
+            <h1 class="fr-title">Assessment Report</h1>
+            <p class="fr-candidate-name">{{ result.name }}</p>
+        </div>
+        <div class="fr-header-right">
+            <div class="fr-score-ring-wrap">
+                <div class="fr-score-ring">
+                    <svg viewBox="0 0 120 120" class="fr-ring-svg">
+                        <circle cx="60" cy="60" r="50" class="fr-ring-bg"/>
+                        <circle cx="60" cy="60" r="50" class="fr-ring-fill" id="scoreRing"/>
+                    </svg>
+                    <div class="fr-ring-label">
+                        <span class="fr-ring-num">{{ result.score }}</span>
+                        <span class="fr-ring-denom">/10</span>
+                    </div>
+                </div>
+                <p class="fr-score-caption">Overall Score</p>
+            </div>
+        </div>
     </div>
 
-    <div class="result-card">
+    <!-- MAIN GRID -->
+    <div class="fr-grid">
 
-        <!-- SCORE -->
-        <div class="score-section">
-            <h2>Overall Score</h2>
-            <div class="score-circle">
-                {{ result.score }} <span>/10</span>
-            </div>
-        </div>
+        <!-- LEFT COL -->
+        <div class="fr-col-left">
 
-        <!-- SKILLS -->
-        <div class="skills-section">
-            <h3>Detected Skills</h3>
-            <div class="skills-tags">
-                {% for skill in result.skills %}
-                    <span class="skill-tag">{{ skill }}</span>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- ANALYSIS SECTION -->
-        <div class="analysis-section">
-            <h3>Communication Analysis</h3>
-
-            <div class="analysis-grid">
-                <div class="metric">
-                    <p>Confidence</p>
-                    <span>{{ analysis.confidence }}%</span>
+            <!-- Communication Metrics -->
+            <div class="fr-card">
+                <div class="fr-card-head">
+                    <span class="fr-card-icon">📊</span>
+                    <h2>Communication Analysis</h2>
                 </div>
 
-                <div class="metric">
-                    <p>Clarity</p>
-                    <span>{{ analysis.clarity }}%</span>
+                <div class="fr-metrics-row">
+                    <div class="fr-metric-item">
+                        <div class="fr-metric-circle">
+                            <svg viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="32" class="fr-mc-bg"/>
+                                <circle cx="40" cy="40" r="32" class="fr-mc-fill" data-pct="{{ analysis.confidence | default(0) }}"/>
+                            </svg>
+                            <span class="fr-mc-val">{{ analysis.confidence }}%</span>
+                        </div>
+                        <p class="fr-metric-label">Confidence</p>
+                    </div>
+
+                    <div class="fr-metric-item">
+                        <div class="fr-metric-circle">
+                            <svg viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="32" class="fr-mc-bg"/>
+                                <circle cx="40" cy="40" r="32" class="fr-mc-fill" data-pct="{{ analysis.clarity | default(0) }}"/>
+                            </svg>
+                            <span class="fr-mc-val">{{ analysis.clarity }}%</span>
+                        </div>
+                        <p class="fr-metric-label">Clarity</p>
+                    </div>
+
+                    <div class="fr-metric-item">
+                        <div class="fr-metric-circle">
+                            <svg viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r="32" class="fr-mc-bg"/>
+                                <circle cx="40" cy="40" r="32" class="fr-mc-fill" data-pct="{{ analysis.communication | default(0) }}"/>
+                            </svg>
+                            <span class="fr-mc-val">{{ analysis.communication }}%</span>
+                        </div>
+                        <p class="fr-metric-label">Communication</p>
+                    </div>
                 </div>
 
-                <div class="metric">
-                    <p>Communication</p>
-                    <span>{{ analysis.communication }}%</span>
+                <div class="fr-summary-text">
+                    <p>{{ analysis.summary }}</p>
                 </div>
             </div>
 
-            <p class="analysis-summary">
-                {{ analysis.summary }}
-            </p>
+            <!-- AI Feedback -->
+            <div class="fr-card fr-feedback-card">
+                <div class="fr-card-head">
+                    <span class="fr-card-icon">🤖</span>
+                    <h2>AI Interviewer Feedback</h2>
+                </div>
+                <blockquote class="fr-feedback-quote">
+                    "{{ result.feedback }}"
+                </blockquote>
+            </div>
+
         </div>
 
-        <!-- FEEDBACK -->
-        <div class="feedback-section">
-            <h3>AI Feedback</h3>
-            <p>{{ result.feedback }}</p>
-        </div>
+        <!-- RIGHT COL -->
+        <div class="fr-col-right">
 
-        <!-- ACTION BUTTONS -->
-        <div class="result-actions">
-            <a href="/" class="btn-primary-glow">Take Another Interview</a>
-            <a href="/dashboard" class="btn-secondary-outline">Go to Dashboard</a>
-            <a href="/download-report" class="btn-download-report">
-                ⬇ Download Report
-            </a>
-        </div>
+            <!-- Detected Skills -->
+            <div class="fr-card">
+                <div class="fr-card-head">
+                    <span class="fr-card-icon">⚡</span>
+                    <h2>Detected Skills</h2>
+                </div>
+                <div class="fr-skills-wrap">
+                    {% if result.skills %}
+                        {% for skill in result.skills %}
+                        <span class="fr-skill-pill">{{ skill }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <p class="fr-empty-note">No skills detected from resume.</p>
+                    {% endif %}
+                </div>
+            </div>
 
+            <!-- Big Five Personality Traits -->
+            {% if traits %}
+            <div class="fr-card">
+                <div class="fr-card-head">
+                    <span class="fr-card-icon">🧠</span>
+                    <h2>Personality Profile</h2>
+                    <span class="fr-card-sub">Big Five Framework</span>
+                </div>
+                <div class="fr-traits-list">
+                    {% for trait, value in traits.items() %}
+                    <div class="fr-trait-row">
+                        <div class="fr-trait-meta">
+                            <span class="fr-trait-name">{{ trait }}</span>
+                            <span class="fr-trait-val">{{ value }}</span>
+                        </div>
+                        <div class="fr-trait-track">
+                            <div class="fr-trait-bar" style="width: {{ value }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Score Verdict -->
+            <div class="fr-card fr-verdict-card {% if result.score >= 7.5 %}fr-verdict-green{% elif result.score >= 5.0 %}fr-verdict-yellow{% else %}fr-verdict-red{% endif %}">
+                <div class="fr-verdict-inner">
+                    <span class="fr-verdict-icon">
+                        {% if result.score >= 7.5 %}🏆{% elif result.score >= 5.0 %}👍{% else %}📈{% endif %}
+                    </span>
+                    <div>
+                        <p class="fr-verdict-label">Performance Verdict</p>
+                        <p class="fr-verdict-text">
+                            {% if result.score >= 7.5 %}Outstanding Candidate{% elif result.score >= 5.0 %}Good Performance{% else %}Needs Improvement{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="fr-actions">
+        <a href="/download-report" class="fr-btn fr-btn-outline">⬇ Download Report</a>
+        <a href="/dashboard" class="fr-btn fr-btn-secondary">📊 View Rankings</a>
+        <a href="/register" class="fr-btn fr-btn-primary">🔄 Retake Interview</a>
     </div>
 
 </div>
+
+<script>
+// Animate score ring on load
+document.addEventListener("DOMContentLoaded", function() {
+    const score = {{ result.score }};
+    const pct = score / 10;
+    const circumference = 2 * Math.PI * 50; // r=50
+    const ring = document.getElementById("scoreRing");
+    if (ring) {
+        ring.style.strokeDasharray = circumference;
+        ring.style.strokeDashoffset = circumference;
+        setTimeout(() => {
+            ring.style.transition = "stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)";
+            ring.style.strokeDashoffset = circumference * (1 - pct);
+        }, 300);
+    }
+
+    // Animate metric circles
+    document.querySelectorAll(".fr-mc-fill[data-pct]").forEach(el => {
+        const pct = parseFloat(el.getAttribute("data-pct")) || 0;
+        const circ = 2 * Math.PI * 32; // r=32
+        el.style.strokeDasharray = circ;
+        el.style.strokeDashoffset = circ;
+        setTimeout(() => {
+            el.style.transition = "stroke-dashoffset 1s ease";
+            el.style.strokeDashoffset = circ * (1 - pct / 100);
+        }, 500);
+    });
+});
+</script>
 
 {% endblock %}
